@@ -20,7 +20,11 @@
 	</properties>
 
 	<modules>
-
+		<module>common</module>
+		<module>simulator</module>
+		<module>ingestion-api</module>
+		<module>processing-worker</module>
+		<module>monitoring-api</module>
 	</modules>
 
 </project>
