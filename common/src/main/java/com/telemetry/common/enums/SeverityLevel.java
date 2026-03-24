@@ -1,4 +1,4 @@
-package enums;
+package com.telemetry.common.enums;
 
 public enum SeverityLevel {
     NORMAL,

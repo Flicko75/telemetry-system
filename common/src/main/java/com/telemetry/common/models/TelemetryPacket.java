@@ -1,6 +1,6 @@
-package models;
+package com.telemetry.common.models;
 
-import enums.DeviceHealth;
+import com.telemetry.common.enums.DeviceHealth;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
