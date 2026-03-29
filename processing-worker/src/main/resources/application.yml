@@ -33,3 +33,19 @@ spring:
 
 server:
   port: 8082
+
+telemetry:
+  thresholds:
+    battery:
+      critical: 20
+      near-critical: 50
+    temperature:
+      critical-high: 80
+      near-critical-high: 60
+      critical-low: -20
+      near-critical-low: 0
+    pressure:
+      critical-high: 1100
+      near-critical-high: 1060
+      critical-low: 900
+      near-critical-low: 950
