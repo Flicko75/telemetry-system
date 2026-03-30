@@ -1,5 +1,6 @@
 package com.telemetry.processing.entity;
 
+import com.telemetry.common.enums.SeverityLevel;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,5 +35,8 @@ public class TelemetryPacketEntity {
     private Double latitude;
 
     private Double longitude;
+
+    @Enumerated(EnumType.STRING)
+    private SeverityLevel severityLevel;
 
 }
