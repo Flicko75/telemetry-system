@@ -24,7 +24,6 @@ public class TelemetryConsumer {
 
     @KafkaListener(topics = "telemetry.raw", groupId = "processing-group")
     public void consume(TelemetryPacket packet){
-        System.out.println("Packet received in consumer: " + packet.getDeviceId());
         SeverityLevel severityLevel = classificationService.classify(packet);
         persistenceService.persist(packet, severityLevel);
         deviceStateService.updateDeviceState(packet);
