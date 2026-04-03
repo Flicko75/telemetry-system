@@ -25,6 +25,7 @@
 		<module>ingestion-api</module>
 		<module>processing-worker</module>
 		<module>monitoring-api</module>
-	</modules>
+        <module>alert-worker</module>
+    </modules>
 
 </project>
