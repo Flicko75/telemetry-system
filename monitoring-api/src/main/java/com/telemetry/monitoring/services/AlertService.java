@@ -8,6 +8,7 @@ import com.telemetry.monitoring.repos.DeviceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -30,6 +31,7 @@ public class AlertService {
                 .orElseThrow(() -> new RuntimeException("Alert not found"));
 
         alertEntity.setAlertStatus(dto.status());
+        alertEntity.setResolvedAt(LocalDateTime.now());
 
         return alertRepository.save(alertEntity);
     }
