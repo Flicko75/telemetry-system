@@ -1,5 +1,6 @@
 package com.telemetry.monitoring.services;
 
+import com.telemetry.common.exceptions.ResourceNotFoundException;
 import com.telemetry.monitoring.entity.DeviceEntity;
 import com.telemetry.monitoring.entity.TelemetryPacketEntity;
 import com.telemetry.monitoring.repos.DeviceRepository;
@@ -25,14 +26,14 @@ public class TelemetryQueryService {
 
     public Page<TelemetryPacketEntity> getPacketByDevice(String deviceId, Pageable pageable){
         DeviceEntity device = deviceRepository.findByDeviceId(deviceId)
-                .orElseThrow(() -> new RuntimeException("Device not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Device not found"));
 
         return packetRepository.findByDevice(device, pageable);
     }
 
     public Page<TelemetryPacketEntity> getPacketByDeviceAndTimeRange(String deviceId, LocalDateTime start, LocalDateTime end, Pageable pageable){
         DeviceEntity device = deviceRepository.findByDeviceId(deviceId)
-                .orElseThrow(() -> new RuntimeException("Device not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Device not found"));
 
         return packetRepository.findByDeviceAndReceivingTimeBetween(device, start, end, pageable);
     }

@@ -6,6 +6,7 @@ import com.telemetry.alert.repos.AlertRepository;
 import com.telemetry.alert.repos.DeviceRepository;
 import com.telemetry.common.enums.AlertStatus;
 import com.telemetry.common.enums.SeverityLevel;
+import com.telemetry.common.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public class AlertService {
 
     public void createAlertIfNeeded(String deviceId, SeverityLevel severityLevel){
         DeviceEntity device = deviceRepository.findByDeviceId(deviceId)
-                .orElseThrow(() -> new RuntimeException("Device not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Device not found"));
 
         Optional<AlertEntity> alert = alertRepository.findByDeviceAndAlertStatus(device, AlertStatus.ACTIVE);
 

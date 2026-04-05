@@ -1,5 +1,6 @@
 package com.telemetry.monitoring.services;
 
+import com.telemetry.common.exceptions.ResourceNotFoundException;
 import com.telemetry.monitoring.entity.DeviceEntity;
 import com.telemetry.monitoring.entity.TelemetryPacketEntity;
 import com.telemetry.monitoring.repos.DeviceRepository;
@@ -32,10 +33,10 @@ public class DeviceLiveService {
 
         if (state.isEmpty()){
             DeviceEntity device = deviceRepository.findByDeviceId(deviceId)
-                    .orElseThrow(() -> new RuntimeException("Device not found: " + deviceId));
+                    .orElseThrow(() -> new ResourceNotFoundException("Device not found: " + deviceId));
 
             TelemetryPacketEntity packet = packetRepository.findTopByDeviceOrderByReceivingTimeDesc(device)
-                    .orElseThrow(() -> new RuntimeException("Packet not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Packet not found"));
 
             Map<Object, Object> stateFromDb = new HashMap<>();
             stateFromDb.put("health", String.valueOf(packet.getDevice().getDeviceHealth()));
