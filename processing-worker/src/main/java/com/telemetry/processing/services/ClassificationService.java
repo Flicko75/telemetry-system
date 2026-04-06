@@ -5,12 +5,14 @@ import com.telemetry.common.models.TelemetryPacket;
 import com.telemetry.processing.config.ThresholdConfig;
 import com.telemetry.processing.utils.ClassifyHelper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ClassificationService {
 
     private final ClassifyHelper classifyHelper;
@@ -25,6 +27,7 @@ public class ClassificationService {
                 worstSeverity = current;
             }
         }
+        log.info("Device {} classified as {}", packet.getDeviceId(), worstSeverity);
 
         return worstSeverity;
     }

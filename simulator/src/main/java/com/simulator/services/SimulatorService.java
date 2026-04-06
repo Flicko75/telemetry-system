@@ -6,6 +6,7 @@ import com.telemetry.common.models.Coordinates;
 import com.telemetry.common.models.TelemetryPacket;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SimulatorService {
@@ -27,6 +29,8 @@ public class SimulatorService {
         devices.put("SAT-001", new DeviceState("SAT-001", 100, 25, 1013, false));
         devices.put("SAT-002", new DeviceState("SAT-002", 80, 20, 1010, false));
         devices.put("SAT-003", new DeviceState("SAT-003", 60, 30, 1005, false));
+
+        log.info("Simulator initialized with {} devices", devices.size());
     }
 
     @Scheduled(fixedRate = 3000)
@@ -62,6 +66,9 @@ public class SimulatorService {
                     "http://localhost:8081/api/v1/telemetry",
                     packet,
                     String.class);
+
+            log.info("Packet sent for device {} | battery={} temp={} pressure={}",
+                    id, state.getBattery(), state.getTemperature(), state.getPressure());
         });
     }
 

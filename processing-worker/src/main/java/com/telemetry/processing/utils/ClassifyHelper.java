@@ -3,8 +3,10 @@ package com.telemetry.processing.utils;
 import com.telemetry.common.enums.SeverityLevel;
 import com.telemetry.processing.config.ThresholdConfig;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ClassifyHelper {
@@ -60,11 +62,14 @@ public class ClassifyHelper {
                 }
             }
             else {
+                log.warn("Unknown measurement key {} defaulting to NEAR_CRITICAL", key);
                 currentSeverity = SeverityLevel.NEAR_CRITICAL;
             }
         }
-        else
+        else {
+            log.warn("Non-numeric value of key {} defaulting to NEAR_CRITICAL", key);
             currentSeverity = SeverityLevel.NEAR_CRITICAL;
+        }
 
         return currentSeverity;
     }

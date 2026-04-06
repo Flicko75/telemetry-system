@@ -3,9 +3,11 @@ package com.telemetry.processing.services;
 import com.telemetry.common.enums.SeverityLevel;
 import com.telemetry.common.models.TelemetryPacket;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RoutingService {
@@ -18,6 +20,7 @@ public class RoutingService {
             case NEAR_CRITICAL -> kafkaTemplate.send("telemetry.near-critical", packet.getDeviceId(), packet);
             case CRITICAL -> kafkaTemplate.send("telemetry.critical", packet.getDeviceId(), packet);
         }
+        log.info("Device {} routed to {} topic", packet.getDeviceId(), severityLevel);
     }
 
 }

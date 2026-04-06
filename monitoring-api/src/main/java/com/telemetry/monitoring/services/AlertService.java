@@ -7,6 +7,7 @@ import com.telemetry.monitoring.entity.DeviceEntity;
 import com.telemetry.monitoring.repos.AlertRepository;
 import com.telemetry.monitoring.repos.DeviceRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AlertService {
 
     private final AlertRepository alertRepository;
@@ -33,6 +35,7 @@ public class AlertService {
 
         alertEntity.setAlertStatus(dto.status());
         alertEntity.setResolvedAt(LocalDateTime.now());
+        log.info("Alert {} resolved", alertId);
 
         return alertRepository.save(alertEntity);
     }

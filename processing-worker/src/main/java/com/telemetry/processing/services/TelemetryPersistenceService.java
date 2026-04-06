@@ -7,10 +7,12 @@ import com.telemetry.processing.entity.TelemetryPacketEntity;
 import com.telemetry.processing.repos.DeviceRepository;
 import com.telemetry.processing.repos.TelemetryPacketRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TelemetryPersistenceService {
@@ -26,6 +28,8 @@ public class TelemetryPersistenceService {
                     deviceEntity.setDeviceId(packet.getDeviceId());
                     deviceEntity.setDeviceDesc("Auto registered device");
                     deviceEntity.setRegisteredAt(LocalDateTime.now());
+
+                    log.info("Auto registered new device {}", packet.getDeviceId());
                     return deviceEntity;
                 });
 
@@ -43,6 +47,7 @@ public class TelemetryPersistenceService {
         telemetryPacket.setLongitude(packet.getCoordinates().getLongitude());
         telemetryPacket.setSeverityLevel(severityLevel);
 
+        log.info("Packet persisted for device {} with severity {}", packet.getDeviceId(), severityLevel);
         telemetryPacketRepository.save(telemetryPacket);
     }
 

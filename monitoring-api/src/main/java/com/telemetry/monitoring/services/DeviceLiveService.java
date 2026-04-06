@@ -6,6 +6,7 @@ import com.telemetry.monitoring.entity.TelemetryPacketEntity;
 import com.telemetry.monitoring.repos.DeviceRepository;
 import com.telemetry.monitoring.repos.TelemetryPacketRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DeviceLiveService {
 
     private final RedisTemplate<String, String> redisTemplate;
@@ -33,7 +35,7 @@ public class DeviceLiveService {
 
         if (state.isEmpty()){
             DeviceEntity device = deviceRepository.findByDeviceId(deviceId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Device not found: " + deviceId));
+                    .orElseThrow(() -> new ResourceNotFoundException("Device not found"));
 
             TelemetryPacketEntity packet = packetRepository.findTopByDeviceOrderByReceivingTimeDesc(device)
                     .orElseThrow(() -> new ResourceNotFoundException("Packet not found"));
@@ -46,15 +48,18 @@ public class DeviceLiveService {
             packet.getMeasurements().forEach((k, v) -> stateFromDb.put(k, String.valueOf(v)));
 
             state = stateFromDb;
+            log.info("Redis empty for device {} falling back to DB", deviceId);
         }
 
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+        log.info("New SSE emitter created");
         emitters.put(deviceId, emitter);
 
         emitter.onCompletion(() -> emitters.remove(deviceId));
         emitter.onTimeout(() -> emitters.remove(deviceId));
 
         sendToEmitter(emitter, state);
+        log.info("Emitter setup with redis cache values");
 
         return emitter;
     }
@@ -66,6 +71,7 @@ public class DeviceLiveService {
             if (!state.isEmpty()){
                 sendToEmitter(emitter, state);
             }
+            log.warn("No Redis state found for device {} during scheduled push", deviceId);
         });
     }
 
@@ -73,6 +79,7 @@ public class DeviceLiveService {
         try {
             emitter.send(SseEmitter.event().data(state));
         } catch (IOException e){
+            log.error("IOException occurred while emitter data injection");
             emitter.complete();
         }
     }

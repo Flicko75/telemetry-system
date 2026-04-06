@@ -8,6 +8,7 @@ import com.telemetry.common.enums.AlertStatus;
 import com.telemetry.common.enums.SeverityLevel;
 import com.telemetry.common.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AlertService {
 
     private final DeviceRepository deviceRepository;
@@ -28,6 +30,7 @@ public class AlertService {
         Optional<AlertEntity> alert = alertRepository.findByDeviceAndAlertStatus(device, AlertStatus.ACTIVE);
 
         if (alert.isPresent()){
+            log.warn("Active alert already exists for device {}", deviceId);
             return;
         }
 
@@ -37,6 +40,7 @@ public class AlertService {
         newAlert.setCreatedAt(LocalDateTime.now());
         newAlert.setSeverityLevel(severityLevel);
         alertRepository.save(newAlert);
+        log.info("New alert created for device {}", deviceId);
     }
 
 }

@@ -6,6 +6,7 @@ import com.telemetry.monitoring.entity.TelemetryPacketEntity;
 import com.telemetry.monitoring.repos.DeviceRepository;
 import com.telemetry.monitoring.repos.TelemetryPacketRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TelemetryQueryService {
 
     private final TelemetryPacketRepository packetRepository;
@@ -35,6 +37,7 @@ public class TelemetryQueryService {
         DeviceEntity device = deviceRepository.findByDeviceId(deviceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Device not found"));
 
+        log.info("Fetching packets for device {} between {} and {}", deviceId, start, end);
         return packetRepository.findByDeviceAndReceivingTimeBetween(device, start, end, pageable);
     }
 
