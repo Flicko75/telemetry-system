@@ -1,6 +1,7 @@
 package com.telemetry.alert.entity;
 
 import com.telemetry.common.enums.DeviceHealth;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,5 +29,7 @@ public class DeviceEntity {
     private LocalDateTime lastSeen;
 
     private LocalDateTime registeredAt;
+
+    private LocalDateTime officiallyRegisteredAt;
 
 }

@@ -29,4 +29,6 @@ public class DeviceEntity {
 
     private LocalDateTime registeredAt;
 
+    private LocalDateTime officiallyRegisteredAt;
+
 }
