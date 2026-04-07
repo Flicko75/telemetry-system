@@ -2,6 +2,7 @@ package com.telemetry.ingestion.services;
 
 import com.telemetry.common.exceptions.RateLimitExceededException;
 import com.telemetry.common.models.TelemetryPacket;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -22,6 +23,8 @@ public class IngestionService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
+    private final MeterRegistry meterRegistry;
+
     public ResponseEntity<String> receivePacket(TelemetryPacket packet) {
         checkRateLimit(packet.getDeviceId());
 
@@ -31,8 +34,10 @@ public class IngestionService {
                 .whenComplete((result, ex) -> {
                     if (ex != null)
                         log.error("Failed to send packet for device {}", packet.getDeviceId(), ex);
-                    else
+                    else {
                         log.info("Packet received for device {}", packet.getDeviceId());
+                        meterRegistry.counter("telemetry.packet.received", "deviceId", packet.getDeviceId()).increment();
+                    }
                 });
 
         return ResponseEntity.ok("Packet received successfully");
@@ -48,6 +53,7 @@ public class IngestionService {
         }
 
         if (count ==  null || count > 25){
+            meterRegistry.counter("telemetry.rate.limit.exceeded", "deviceId", deviceId).increment();
             log.warn("Rate limit exceeded for device {}", deviceId);
             throw new RateLimitExceededException("Rate limit exceeded for device:" + deviceId);
         }

@@ -5,6 +5,9 @@ import com.telemetry.monitoring.entity.DeviceEntity;
 import com.telemetry.monitoring.entity.TelemetryPacketEntity;
 import com.telemetry.monitoring.repos.DeviceRepository;
 import com.telemetry.monitoring.repos.TelemetryPacketRepository;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -29,6 +32,14 @@ public class DeviceLiveService {
     private final DeviceRepository deviceRepository;
 
     private final TelemetryPacketRepository packetRepository;
+
+    private final MeterRegistry meterRegistry;
+
+    @PostConstruct
+    public void initMetrics(){
+        Gauge.builder("telemetry.sse.active.emitters", emitters, Map::size)
+                .register(meterRegistry);
+    }
 
     public SseEmitter subscribe(String deviceId){
         Map<Object, Object> state = redisTemplate.opsForHash().entries("device:" + deviceId);

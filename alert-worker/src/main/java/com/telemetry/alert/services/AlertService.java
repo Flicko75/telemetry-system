@@ -7,6 +7,7 @@ import com.telemetry.alert.repos.DeviceRepository;
 import com.telemetry.common.enums.AlertStatus;
 import com.telemetry.common.enums.SeverityLevel;
 import com.telemetry.common.exceptions.ResourceNotFoundException;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,8 @@ public class AlertService {
     private final DeviceRepository deviceRepository;
 
     private final AlertRepository alertRepository;
+
+    private final MeterRegistry meterRegistry;
 
     public void createAlertIfNeeded(String deviceId, SeverityLevel severityLevel){
         DeviceEntity device = deviceRepository.findByDeviceId(deviceId)
@@ -40,7 +43,9 @@ public class AlertService {
         newAlert.setCreatedAt(LocalDateTime.now());
         newAlert.setSeverityLevel(severityLevel);
         alertRepository.save(newAlert);
+
         log.info("New alert created for device {}", deviceId);
+        meterRegistry.counter("telemetry.alert.created", "severity", severityLevel.name()).increment();
     }
 
 }
