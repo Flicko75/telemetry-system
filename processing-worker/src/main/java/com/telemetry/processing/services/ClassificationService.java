@@ -4,6 +4,7 @@ import com.telemetry.common.enums.SeverityLevel;
 import com.telemetry.common.models.TelemetryPacket;
 import com.telemetry.processing.config.ThresholdConfig;
 import com.telemetry.processing.utils.ClassifyHelper;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,8 @@ public class ClassificationService {
 
     private final ClassifyHelper classifyHelper;
 
+    private final MeterRegistry meterRegistry;
+
     public SeverityLevel classify(TelemetryPacket packet){
         SeverityLevel worstSeverity = SeverityLevel.NORMAL;
 
@@ -27,6 +30,7 @@ public class ClassificationService {
                 worstSeverity = current;
             }
         }
+        meterRegistry.counter("telemetry.packets.classified", "severity", worstSeverity.name()).increment();
         log.info("Device {} classified as {}", packet.getDeviceId(), worstSeverity);
 
         return worstSeverity;
