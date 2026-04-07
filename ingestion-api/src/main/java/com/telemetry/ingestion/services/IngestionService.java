@@ -40,7 +40,7 @@ public class IngestionService {
                     }
                 });
 
-        return ResponseEntity.ok("Packet received successfully");
+        return ResponseEntity.accepted().body("Packet received successfully");
     }
 
     private void checkRateLimit(String deviceId){
