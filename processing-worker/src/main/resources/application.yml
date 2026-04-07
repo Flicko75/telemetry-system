@@ -49,3 +49,12 @@ telemetry:
       near-critical-high: 1060
       critical-low: 900
       near-critical-low: 950
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  endpoint:
+    prometheus:
+      enabled: true
