@@ -1,6 +1,7 @@
 package com.telemetry.monitoring.controllers;
 
 import com.telemetry.common.DTOs.AlertEntityDTO;
+import com.telemetry.common.DTOs.AlertResponse;
 import com.telemetry.monitoring.entity.AlertEntity;
 import com.telemetry.monitoring.services.AlertService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +31,7 @@ public class AlertController {
             @ApiResponse(responseCode = "404", description = "Device not found")
     })
     @GetMapping("/{deviceId}")
-    public ResponseEntity<List<AlertEntity>> getAlertsByDevice(@PathVariable String deviceId){
+    public ResponseEntity<List<AlertResponse>> getAlertsByDevice(@PathVariable String deviceId){
         return ResponseEntity.ok(alertService.getAlertsByDevice(deviceId));
     }
 
@@ -41,8 +42,8 @@ public class AlertController {
             @ApiResponse(responseCode = "404", description = "Alert not found")
     })
     @PatchMapping("/{alertId}")
-    public ResponseEntity<AlertEntity> resolveAlert(@PathVariable Long alertId,
-                                                    @RequestBody AlertEntityDTO dto){
+    public ResponseEntity<AlertResponse> resolveAlert(@PathVariable Long alertId,
+                                                      @RequestBody AlertEntityDTO dto){
         return ResponseEntity.ok(alertService.resolveAlert(alertId, dto));
     }
 

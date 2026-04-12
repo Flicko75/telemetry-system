@@ -1,6 +1,7 @@
 package com.telemetry.monitoring.services;
 
 import com.telemetry.common.DTOs.AlertEntityDTO;
+import com.telemetry.common.DTOs.AlertResponse;
 import com.telemetry.common.exceptions.ResourceNotFoundException;
 import com.telemetry.monitoring.entity.AlertEntity;
 import com.telemetry.monitoring.entity.DeviceEntity;
@@ -22,14 +23,17 @@ public class AlertService {
 
     private final DeviceRepository deviceRepository;
 
-    public List<AlertEntity> getAlertsByDevice(String deviceId){
+    public List<AlertResponse> getAlertsByDevice(String deviceId){
         DeviceEntity device = deviceRepository.findByDeviceId(deviceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Device not found"));
 
-        return alertRepository.findByDevice(device);
+        return alertRepository.findByDevice(device)
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
-    public AlertEntity resolveAlert(Long alertId, AlertEntityDTO dto){
+    public AlertResponse resolveAlert(Long alertId, AlertEntityDTO dto){
         AlertEntity alertEntity = alertRepository.findById(alertId)
                 .orElseThrow(() -> new ResourceNotFoundException("Alert not found"));
 
@@ -37,7 +41,17 @@ public class AlertService {
         alertEntity.setResolvedAt(LocalDateTime.now());
         log.info("Alert {} resolved", alertId);
 
-        return alertRepository.save(alertEntity);
+        return toResponse(alertRepository.save(alertEntity));
+    }
+
+    private AlertResponse toResponse(AlertEntity alert){
+        return new AlertResponse(
+                alert.getDevice().getDeviceId(),
+                alert.getSeverityLevel(),
+                alert.getAlertStatus(),
+                alert.getCreatedAt(),
+                alert.getResolvedAt()
+        );
     }
 
 }

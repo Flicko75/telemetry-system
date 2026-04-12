@@ -1,5 +1,6 @@
 package com.telemetry.monitoring.services;
 
+import com.telemetry.common.DTOs.TelemetryPacketResponse;
 import com.telemetry.common.exceptions.ResourceNotFoundException;
 import com.telemetry.monitoring.entity.DeviceEntity;
 import com.telemetry.monitoring.entity.TelemetryPacketEntity;
@@ -22,23 +23,34 @@ public class TelemetryQueryService {
 
     private final DeviceRepository deviceRepository;
 
-    public Page<TelemetryPacketEntity> getAllPackets(Pageable pageable){
-        return packetRepository.findAll(pageable);
+    public Page<TelemetryPacketResponse> getAllPackets(Pageable pageable){
+        return packetRepository.findAll(pageable).map(this::toResponse);
     }
 
-    public Page<TelemetryPacketEntity> getPacketByDevice(String deviceId, Pageable pageable){
+    public Page<TelemetryPacketResponse> getPacketByDevice(String deviceId, Pageable pageable){
         DeviceEntity device = deviceRepository.findByDeviceId(deviceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Device not found"));
 
-        return packetRepository.findByDevice(device, pageable);
+        return packetRepository.findByDevice(device, pageable).map(this::toResponse);
     }
 
-    public Page<TelemetryPacketEntity> getPacketByDeviceAndTimeRange(String deviceId, LocalDateTime start, LocalDateTime end, Pageable pageable){
+    public Page<TelemetryPacketResponse> getPacketByDeviceAndTimeRange(String deviceId, LocalDateTime start, LocalDateTime end, Pageable pageable){
         DeviceEntity device = deviceRepository.findByDeviceId(deviceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Device not found"));
 
         log.info("Fetching packets for device {} between {} and {}", deviceId, start, end);
-        return packetRepository.findByDeviceAndReceivingTimeBetween(device, start, end, pageable);
+        return packetRepository.findByDeviceAndReceivingTimeBetween(device, start, end, pageable).map(this::toResponse);
+    }
+
+    private TelemetryPacketResponse toResponse(TelemetryPacketEntity packet){
+        return new TelemetryPacketResponse(
+                packet.getDevice().getDeviceId(),
+                packet.getMeasurements(),
+                packet.getSendingTime(),
+                packet.getReceivingTime(),
+                packet.getLatitude(),
+                packet.getLongitude()
+        );
     }
 
 }

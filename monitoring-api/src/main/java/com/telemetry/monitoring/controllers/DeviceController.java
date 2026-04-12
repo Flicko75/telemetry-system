@@ -1,5 +1,6 @@
 package com.telemetry.monitoring.controllers;
 
+import com.telemetry.common.DTOs.DeviceResponse;
 import com.telemetry.common.DTOs.DeviceUpdateDTO;
 import com.telemetry.monitoring.entity.DeviceEntity;
 import com.telemetry.monitoring.services.DeviceLiveService;
@@ -41,9 +42,9 @@ public class DeviceController {
             @ApiResponse(responseCode = "404", description = "Device not found")
     })
     @PatchMapping("/{deviceId}")
-    public ResponseEntity<DeviceEntity> officiallyRegisterDevice(@PathVariable String deviceId,
-                                                                 @RequestBody DeviceUpdateDTO updateDTO){
-        return deviceService.officiallyRegisterDevice(deviceId, updateDTO);
+    public ResponseEntity<DeviceResponse> officiallyRegisterDevice(@PathVariable String deviceId,
+                                                                   @RequestBody DeviceUpdateDTO updateDTO){
+        return ResponseEntity.ok(deviceService.officiallyRegisterDevice(deviceId, updateDTO));
     }
 
 }

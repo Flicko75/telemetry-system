@@ -1,5 +1,6 @@
 package com.telemetry.monitoring.controllers;
 
+import com.telemetry.common.DTOs.TelemetryPacketResponse;
 import com.telemetry.monitoring.entity.TelemetryPacketEntity;
 import com.telemetry.monitoring.services.TelemetryQueryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +27,7 @@ public class TelemetryController {
             description = "Returns a paginated list of all telemetry packets across all devices")
     @ApiResponse(responseCode = "200", description = "Packets retrieved successfully")
     @GetMapping
-    public ResponseEntity<Page<TelemetryPacketEntity>> getAllPackets(Pageable pageable){
+    public ResponseEntity<Page<TelemetryPacketResponse>> getAllPackets(Pageable pageable){
         return ResponseEntity.ok(queryService.getAllPackets(pageable));
     }
 
@@ -37,7 +38,7 @@ public class TelemetryController {
             @ApiResponse(responseCode = "404", description = "Device not found")
     })
     @GetMapping("/{deviceId}")
-    public ResponseEntity<Page<TelemetryPacketEntity>> getPacketByDevice(@PathVariable String deviceId, Pageable pageable){
+    public ResponseEntity<Page<TelemetryPacketResponse>> getPacketByDevice(@PathVariable String deviceId, Pageable pageable){
         return ResponseEntity.ok(queryService.getPacketByDevice(deviceId, pageable));
     }
 
@@ -48,7 +49,7 @@ public class TelemetryController {
             @ApiResponse(responseCode = "404", description = "Device not found")
     })
     @GetMapping("/{deviceId}/range")
-    public ResponseEntity<Page<TelemetryPacketEntity>> getPacketBetweenRange(@PathVariable String deviceId,
+    public ResponseEntity<Page<TelemetryPacketResponse>> getPacketBetweenRange(@PathVariable String deviceId,
                                                              @RequestParam LocalDateTime start,
                                                              @RequestParam LocalDateTime end,
                                                              Pageable pageable){
