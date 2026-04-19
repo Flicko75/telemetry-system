@@ -30,7 +30,7 @@ Each service is independently deployable and communicates asynchronously over Ka
 ## How to Run
 
 ```bash
-git clone https://github.com/your-username/telsys.git
+git clone https://github.com/Flicko75/telemetry-system.git
 cd telsys
 docker compose up --build
 ```
