@@ -59,11 +59,11 @@ public class SimulatorService {
             packet.setDeviceId(id);
             packet.setDeviceHealth(DeviceHealth.HEALTHY);
             packet.setSendingTime(LocalDateTime.now());
-            packet.setCoordinates(new Coordinates(10, 11));
+            packet.setCoordinates(new Coordinates(10.0, 11.0));
             packet.setMeasurements(measurements);
 
             restTemplate.postForEntity(
-                    "http://localhost:8081/api/v1/telemetry",
+                    "http://ingestion-api:8081/api/v1/telemetry",
                     packet,
                     String.class);
 
