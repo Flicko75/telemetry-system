@@ -27,12 +27,85 @@ services:
       KAFKA_NODE_ID: 0
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
       KAFKA_CONTROLLER_QUORUM_VOTERS: 0@kafka:9093
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
+
+  ingestion-api:
+    build:
+      context: .
+      dockerfile: ingestion-api/DockerFile
+    container_name: telemetry-ingestion-api
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - kafka
+      - redis
+
+  processing-worker:
+    build:
+      context: .
+      dockerfile: processing-worker/DockerFile
+    container_name: telemetry-processing-worker
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      - kafka
+      - redis
+      - postgres
+
+  monitoring-api:
+    build:
+      context: .
+      dockerfile: monitoring-api/DockerFile
+    container_name: telemetry-monitoring-api
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      - postgres
+      - redis
+
+  alert-worker:
+    build:
+      context: .
+      dockerfile: alert-worker/DockerFile
+    container_name: telemetry-alert-worker
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      - kafka
+      - redis
+      - postgres
+
+  simulator:
+    build:
+      context: .
+      dockerfile: simulator/DockerFile
+    container_name: telemetry-simulator
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - ingestion-api
 
 volumes:
   postgres_data:
