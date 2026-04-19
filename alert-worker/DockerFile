@@ -1,0 +1,17 @@
+FROM maven:3.9.9-eclipse-temurin-24 AS build
+WORKDIR /app
+COPY pom.xml .
+COPY common/pom.xml common/pom.xml
+COPY common/src common/src
+COPY alert-worker/pom.xml alert-worker/pom.xml
+COPY ingestion-api/pom.xml ingestion-api/pom.xml
+COPY processing-worker/pom.xml processing-worker/pom.xml
+COPY monitoring-api/pom.xml monitoring-api/pom.xml
+COPY simulator/pom.xml simulator/pom.xml
+COPY alert-worker/src alert-worker/src
+RUN mvn -pl alert-worker -am package -DskipTests
+
+FROM eclipse-temurin:24-jre
+WORKDIR /app
+COPY --from=build /app/alert-worker/target/*.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]
