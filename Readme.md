@@ -1,6 +1,6 @@
 # TelSys: Real-Time IoT Telemetry Processing System
 
-TelSys is a distributed backend system for ingesting, processing, and monitoring real-time telemetry data from IoT devices.
+TelSys is a distributed backend system for ingesting, processing, and monitoring real-time telemetry data from IoT devices — designed to handle multi-metric classification, severity-based routing, and live device state streaming at scale.
 
 ## Architecture
 
@@ -34,8 +34,6 @@ git clone https://github.com/Flicko75/telemetry-system.git
 cd telemetry-system
 docker compose up --build
 ```
-
-Requires Docker and Docker Compose installed. All services start automatically.
 
 ## API Endpoints
 
